@@ -19,6 +19,12 @@ public class CameraFollow : MonoBehaviour
     // Camera offset for FPS mode (usually minimal offset)
     public Vector3 fpsOffset = new Vector3(0, 0.5f, 0); // Adjust as needed
 
+    // Reference to the sphere's Rigidbody
+    private Rigidbody targetRigidbody;
+
+    // Smoothness factor for camera rotation
+    public float rotationSmoothSpeed = 5f;
+
     void Start()
     {
         // Find the sphere by name or tag and set it as the target
@@ -34,6 +40,9 @@ public class CameraFollow : MonoBehaviour
                 Debug.LogError("CameraFollow: Sphere not found. Please assign the target manually.");
             }
         }
+
+        // Get the Rigidbody component from the sphere
+        targetRigidbody = target.GetComponent<Rigidbody>();
     }
 
     void Update()
@@ -57,11 +66,26 @@ public class CameraFollow : MonoBehaviour
                 // Position the camera at the target's position with fpsOffset
                 transform.position = target.position + fpsOffset;
 
-                // Get the target's y-axis rotation (yaw) and ignore roll and pitch
-                float yaw = target.eulerAngles.y;
+                // Get the sphere's velocity
+                Vector3 velocity = targetRigidbody.velocity;
 
-                // Set the camera's rotation to match the target's yaw rotation only
-                transform.rotation = Quaternion.Euler(0f, yaw, 0f);
+                // Ignore vertical component
+                velocity.y = 0;
+
+                // If the sphere is moving, update the camera's rotation
+                if (velocity.magnitude > 0.1f)
+                {
+                    // Calculate the direction the sphere is moving
+                    Quaternion targetRotation = Quaternion.LookRotation(velocity.normalized);
+
+                    // Smoothly rotate the camera to face the movement direction
+                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSmoothSpeed * Time.deltaTime);
+                }
+                else
+                {
+                    // Optional: Keep the camera's rotation unchanged or handle idle state
+                    // For example, maintain the last rotation
+                }
             }
             else
             {
@@ -75,7 +99,7 @@ public class CameraFollow : MonoBehaviour
                 // Set the camera's position to the smoothed position
                 transform.position = smoothedPosition;
 
-                // Optional: Keep the camera looking at the target
+                // Keep the camera looking at the target
                 transform.LookAt(target);
             }
         }
