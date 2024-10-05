@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class SphereMove : MonoBehaviour
 {
-    public float moveSpeed = 5f;    // Speed for movement
-    public float jumpForce = 5f;    // Force applied when jumping
+    public float moveSpeed = 5f;          // Normal movement speed
+    public float sprintMultiplier = 2f;   // Speed multiplier when sprinting
+    public float jumpForce = 5f;          // Force applied when jumping
 
-    private Rigidbody rb;           // Reference to Rigidbody component
+    private Rigidbody rb;                 // Reference to Rigidbody component
 
     void Start()
     {
@@ -21,10 +22,16 @@ public class SphereMove : MonoBehaviour
         float moveX = Input.GetAxis("Horizontal"); // A/D for left/right
         float moveZ = Input.GetAxis("Vertical");   // W/S for forward/backward
 
+        // Check if the sprint key (Shift) is held down
+        bool isSprinting = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+
+        // Calculate the current movement speed
+        float currentSpeed = isSprinting ? moveSpeed * sprintMultiplier : moveSpeed;
+
         // Maintain current vertical velocity while setting horizontal velocity
         Vector3 velocity = rb.velocity;
-        velocity.x = moveX * moveSpeed;
-        velocity.z = moveZ * moveSpeed;
+        velocity.x = moveX * currentSpeed;
+        velocity.z = moveZ * currentSpeed;
 
         // Update Rigidbody's velocity to apply movement
         rb.velocity = velocity;
