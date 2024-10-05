@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SphereMove : MonoBehaviour
+public class RobotMove : MonoBehaviour
 {
     public float moveSpeed = 5f;    // Speed for movement
     public float jumpForce = 5f;    // Force applied when jumping

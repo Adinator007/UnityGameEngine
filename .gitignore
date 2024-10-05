@@ -8,6 +8,20 @@
 [Mm]emoryCaptures/
 UserSettings/
 
+# Ignore all Assets except for C# scripts (*.cs)
+# First, ignore everything in Assets
+Assets/*
+
+# Allow C# scripts
+!Assets/**/*.cs
+
+# Allow .meta files only for C# scripts (optional, to keep tracking script metadata)
+!Assets/**/*.cs.meta
+
+# Ignore everything else in Assets (e.g., textures, prefabs, etc.)
+Assets/**/*.*
+!Assets/**/*.cs
+
 # === Visual Studio generated files ===
 .vscode/
 .vs/
@@ -23,7 +37,6 @@ UserSettings/
 *.pdb
 *.opendb
 *.VC.db
-.idea/
 
 # === Rider generated files ===
 .idea/
@@ -41,9 +54,6 @@ Thumbs.db
 
 # === Unity3D Asset Store tools ===
 /Assets/AssetStoreTools*
-
-# === JetBrains Rider ===
-.idea/
 
 # === Builds ===
 *.apk
