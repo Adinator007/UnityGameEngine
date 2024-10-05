@@ -57,8 +57,11 @@ public class CameraFollow : MonoBehaviour
                 // Position the camera at the target's position with fpsOffset
                 transform.position = target.position + fpsOffset;
 
-                // Match the camera's rotation to the target's rotation
-                transform.rotation = target.rotation;
+                // Get the target's y-axis rotation (yaw) and ignore roll and pitch
+                float yaw = target.eulerAngles.y;
+
+                // Set the camera's rotation to match the target's yaw rotation only
+                transform.rotation = Quaternion.Euler(0f, yaw, 0f);
             }
             else
             {
