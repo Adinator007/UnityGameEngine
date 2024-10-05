@@ -4,10 +4,18 @@ using UnityEngine;
 
 public class SphereMove : MonoBehaviour
 {
-    // Speed of the sphere movement
-    public float moveSpeed = 5f;
+    public float moveSpeed = 5f;    // Speed for movement
+    public float jumpForce = 5f;    // Force applied when jumping
+    private bool isGrounded;        // Boolean to check if the sphere is on the ground
 
-    // Update is called once per frame
+    private Rigidbody rb;           // Reference to Rigidbody component
+
+    void Start()
+    {
+        // Get the Rigidbody component attached to the sphere
+        rb = GetComponent<Rigidbody>();
+    }
+
     void Update()
     {
         // Get input from keyboard (WASD keys)
@@ -19,5 +27,22 @@ public class SphereMove : MonoBehaviour
 
         // Move the sphere in the direction based on input
         transform.Translate(move);
+
+        // Jump when the space bar is pressed and the sphere is on the ground
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        {
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            isGrounded = false; // Set isGrounded to false when jumping
+        }
+    }
+
+    // Detect if the sphere is touching the ground
+    private void OnCollisionEnter(Collision collision)
+    {
+        // Check if the sphere is colliding with the ground
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = true; // Set isGrounded to true when touching the ground
+        }
     }
 }
