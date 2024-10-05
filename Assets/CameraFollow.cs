@@ -25,6 +25,12 @@ public class CameraFollow : MonoBehaviour
     // Smoothness factor for camera rotation
     public float rotationSmoothSpeed = 5f;
 
+    // Zooming variables
+    public float zoomSpeed = 2f;
+    public float minZoom = 2f;
+    public float maxZoom = 15f;
+    private float currentZoom = 10f; // Start at the default zoom level
+
     void Start()
     {
         // Find the sphere by name or tag and set it as the target
@@ -42,7 +48,10 @@ public class CameraFollow : MonoBehaviour
         }
 
         // Get the Rigidbody component from the sphere
-        targetRigidbody = target.GetComponent<Rigidbody>();
+        if (target != null)
+        {
+            targetRigidbody = target.GetComponent<Rigidbody>();
+        }
     }
 
     void Update()
@@ -51,6 +60,14 @@ public class CameraFollow : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F))
         {
             isFPS = !isFPS;
+        }
+
+        // Handle zooming with the mouse scroll wheel
+        float scrollInput = Input.GetAxis("Mouse ScrollWheel");
+        if (scrollInput != 0)
+        {
+            currentZoom -= scrollInput * zoomSpeed;
+            currentZoom = Mathf.Clamp(currentZoom, minZoom, maxZoom);
         }
     }
 
@@ -63,40 +80,28 @@ public class CameraFollow : MonoBehaviour
             if (isFPS)
             {
                 // First-Person View
-                // Position the camera at the target's position with fpsOffset
+                // Position the camera at the target's position with fpsOffset adjusted by currentZoom
                 transform.position = target.position + fpsOffset;
 
                 // Get the sphere's velocity
                 Vector3 velocity = targetRigidbody.velocity;
-
-                // Ignore vertical component
                 velocity.y = 0;
 
                 // If the sphere is moving, update the camera's rotation
                 if (velocity.magnitude > 0.1f)
                 {
-                    // Calculate the direction the sphere is moving
                     Quaternion targetRotation = Quaternion.LookRotation(velocity.normalized);
-
-                    // Smoothly rotate the camera to face the movement direction
                     transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSmoothSpeed * Time.deltaTime);
-                }
-                else
-                {
-                    // Optional: Keep the camera's rotation unchanged or handle idle state
-                    // For example, maintain the last rotation
                 }
             }
             else
             {
                 // Third-Person View
-                // Calculate the desired position of the camera
-                Vector3 desiredPosition = target.position + offset;
+                // Calculate the desired position of the camera with currentZoom
+                Vector3 desiredPosition = target.position + offset.normalized * currentZoom;
 
                 // Smoothly move the camera to the desired position
                 Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
-
-                // Set the camera's position to the smoothed position
                 transform.position = smoothedPosition;
 
                 // Keep the camera looking at the target
