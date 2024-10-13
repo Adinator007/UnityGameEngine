@@ -1,10 +1,14 @@
 using UnityEngine;
+using System.Collections; // Add this to fix the IEnumerator issue
 
 public class TeleportToSpawn : MonoBehaviour
 {
     public Transform spawnPoint; // Reference to the spawn point
+    public float movementSpeed = 5f; // Default movement speed
+    private bool isMoving = true; // Flag to check if the player can move
 
-    void Start() {
+    void Start()
+    {
         GameObject spawnPointObject = GameObject.Find("SpawnPoint");
 
         if (spawnPointObject != null)
@@ -24,6 +28,16 @@ public class TeleportToSpawn : MonoBehaviour
         {
             Teleport(); // Call the teleport method
         }
+
+        // Handle movement if the player is allowed to move
+        if (isMoving)
+        {
+            // Add your movement code here
+            // Example: Move the player based on input
+            float moveHorizontal = Input.GetAxis("Horizontal") * movementSpeed * Time.deltaTime;
+            float moveVertical = Input.GetAxis("Vertical") * movementSpeed * Time.deltaTime;
+            transform.Translate(new Vector3(moveHorizontal, 0, moveVertical));
+        }
     }
 
     void Teleport()
@@ -39,10 +53,24 @@ public class TeleportToSpawn : MonoBehaviour
 
             // Log confirmation of teleportation
             Debug.Log("Teleported to spawn point.");
+
+            // Start coroutine to stop movement
+            StartCoroutine(StopMovementTemporarily());
         }
         else
         {
             Debug.LogWarning("Spawn point is not assigned!");
         }
+    }
+
+    private IEnumerator StopMovementTemporarily()
+    {
+        isMoving = false; // Disable movement
+        Debug.Log("Movement stopped for 3 seconds.");
+
+        yield return new WaitForSeconds(3); // Wait for 3 seconds
+
+        isMoving = true; // Re-enable movement
+        Debug.Log("Movement resumed.");
     }
 }

@@ -98,3 +98,5 @@ CrashReports/
 *.idea/
 *.vs/
 .vscode/
+
+Assets/Scenes/SampleScene.unity
